@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
 import { query } from "@/lib/db"
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params
+    const { id } = await context.params
     const body = await request.json()
     const { status } = body
 
@@ -20,7 +20,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
     // Buscar o feedback atualizado
     const [feedback] = await query<Array<any>>(
-      `SELECT id, nome, email, telefone, assunto, mensagem, timestamp, status 
+      `SELECT id, nome, email, telefone, assunto, mensagem, criado_em as timestamp, status
        FROM feedback WHERE id = ?`,
       [id],
     )
@@ -32,9 +32,9 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params
+    const { id } = await context.params
 
     const result = await query<any>(`DELETE FROM feedback WHERE id = ?`, [id])
 

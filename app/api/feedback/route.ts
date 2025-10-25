@@ -42,7 +42,7 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const feedback = await query<
+    const results = await query<
       Array<{
         id: number
         nome: string
@@ -54,12 +54,12 @@ export async function GET() {
         status: "novo" | "lido" | "respondido" | "resolvido"
       }>
     >(
-      `SELECT id, nome, email, telefone, assunto, mensagem, criado_em, status 
-       FROM feedback 
+      `SELECT id, nome, email, telefone, assunto, mensagem, criado_em as timestamp, status
+       FROM feedback
        ORDER BY criado_em DESC`,
     )
 
-    return NextResponse.json({ feedback }, { status: 200 })
+    return NextResponse.json({ feedback: results }, { status: 200 })
   } catch (error) {
     console.error("[v0] Erro ao buscar feedback:", error)
     return NextResponse.json({ error: "Erro ao buscar mensagens" }, { status: 500 })
